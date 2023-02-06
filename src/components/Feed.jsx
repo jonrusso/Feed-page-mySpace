@@ -1,29 +1,38 @@
+import { format, formatDistanceToNow } from 'date-fns'
+
 import styles from './Feed.module.css'
 import { Comment } from './Comment.jsx'
 import { Avatar } from './Avatar';
 
-export function Feed() {
+export function Feed({ author, publishedAt, content }) {
+  const publishedDateFormatted = format(publishedAt, "d LLLL 'at' hh:mm a")
+
+  const publishedDateRelativeToNow = formatDistanceToNow(publishedAt, {
+    addSuffix: true,
+
+  })
+
   return (
     <article className={styles.feed}>
       <header>
         <div className={styles.author}>
-          <Avatar hasBorder={true} src="http://github.com/jonrusso.png" />
+          <Avatar hasBorder={true} src={author.avatarUrl} />
           <div className={styles.authorInfo}>
-            <strong>João Russo</strong>
-            <span>Software Developer</span>
+            <strong>{author.name}</strong>
+            <span>{author.role}</span>
           </div>
         </div>
-        <time title="11 de Maio às 08:13h" dateTime='2022-05-11 08:13:38'>1h ago</time>
+        <time title={publishedDateFormatted} dateTime={publishedAt.toISOString()}>{publishedDateRelativeToNow}</time>
       </header>
 
       <div className={styles.content}>
-        <p>Howdy everyone! 👋</p>
-
-        <p>I just uploaded another project to my portfolio. It is a project I did at the NLW Return, Rocketseat's event. The name of the project is DoctorCare 🚀</p>
-
-        <p><a href="">👉 jane.design/doctorcare</a></p>
-
-        <p><a href="">#newproject #nlw #rocketseat</a></p>
+        {content.map(row => {
+          if (row.type === 'paragraph') {
+            return <p>{row.content}</p>;
+          } else if (row.type === 'link') {
+            return <p><a href="">{row.content}</a></p>
+          }
+        })}
       </div>
 
       <form className={styles.commentForm}>
@@ -33,7 +42,7 @@ export function Feed() {
         />
         <footer>
           <button type="submit">Add Comment</button>
-       </footer>
+        </footer>
       </form>
 
       <div className={styles.commentList}>
