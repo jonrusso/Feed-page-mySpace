@@ -4,6 +4,12 @@ import styles from './Feed.module.css'
 import { Comment } from './Comment.jsx'
 import { Avatar } from './Avatar';
 
+const comments = [
+  1,
+  2,
+  3,
+];
+
 export function Feed({ author, publishedAt, content }) {
   const publishedDateFormatted = format(publishedAt, "d LLLL 'at' hh:mm a")
 
@@ -46,9 +52,9 @@ export function Feed({ author, publishedAt, content }) {
       </form>
 
       <div className={styles.commentList}>
-        <Comment />
-        <Comment />
-        <Comment />
+        {comments.map(comment => {
+          return <Comment />
+        })}
       </div>
     </article>
   )
