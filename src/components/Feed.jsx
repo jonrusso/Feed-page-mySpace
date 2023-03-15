@@ -1,31 +1,36 @@
-import { format, formatDistanceToNow } from 'date-fns'
+import { format, formatDistanceToNow } from "date-fns";
 
-import styles from './Feed.module.css'
-import { Comment } from './Comment.jsx'
-import { Avatar } from './Avatar';
-import { useState } from 'react';
-
-
+import styles from "./Feed.module.css";
+import { Comment } from "./Comment.jsx";
+import { Avatar } from "./Avatar";
+import { useState } from "react";
 
 export function Feed({ author, publishedAt, content }) {
   const [comments, setComments] = useState([
-    1,
-    2,
-  ])
+    "É realmente muito interessante de acompanhar seus posts!",
+  ]);
 
-  const publishedDateFormatted = format(publishedAt, "d LLLL 'at' hh:mm a")
+  const [newCommentText, setNewCommentText] = useState("");
+
+  const publishedDateFormatted = format(publishedAt, "d LLLL 'at' hh:mm a");
 
   const publishedDateRelativeToNow = formatDistanceToNow(publishedAt, {
     addSuffix: true,
+  });
 
-  })
+  function handleCreateNewComment() {
+    event.preventDefault();
 
-  function handleCreateNewComment(){
-    event.preventDefault()
+    setComments([...comments, newCommentText]);
+    setNewCommentText("");
+  }
 
-    setComments([...comments, comments.length + 1]) ;
+  function handleNewCommentChange() {
+    setNewCommentText(event.target.value);
+  }
 
-    console.log('oi');
+  function deleteComment(comment) {
+    console.log(`Deletar comentário ${comment}`);
   }
 
   return (
@@ -38,15 +43,24 @@ export function Feed({ author, publishedAt, content }) {
             <span>{author.role}</span>
           </div>
         </div>
-        <time title={publishedDateFormatted} dateTime={publishedAt.toISOString()}>{publishedDateRelativeToNow}</time>
+        <time
+          title={publishedDateFormatted}
+          dateTime={publishedAt.toISOString()}
+        >
+          {publishedDateRelativeToNow}
+        </time>
       </header>
 
       <div className={styles.content}>
-        {content.map(row => {
-          if (row.type === 'paragraph') {
-            return <p>{row.content}</p>;
-          } else if (row.type === 'link') {
-            return <p><a href="">{row.content}</a></p>
+        {content.map((row) => {
+          if (row.type === "paragraph") {
+            return <p key={row.content}>{row.content}</p>;
+          } else if (row.type === "link") {
+            return (
+              <p key={row.content}>
+                <a href="">{row.content}</a>
+              </p>
+            );
           }
         })}
       </div>
@@ -55,6 +69,9 @@ export function Feed({ author, publishedAt, content }) {
         <strong>Leave your feedback</strong>
         <textarea
           placeholder="Leave your comments here"
+          name="comment" //we can also use input as a name property
+          value={newCommentText}
+          onChange={handleNewCommentChange}
         />
         <footer>
           <button type="submit">Add Comment</button>
@@ -62,10 +79,16 @@ export function Feed({ author, publishedAt, content }) {
       </form>
 
       <div className={styles.commentList}>
-        {comments.map(comment => {
-          return <Comment />
+        {comments.map((comment) => {
+          return (
+            <Comment
+              key={comment}
+              content={comment}
+              onDeleteComment={deleteComment}
+            />
+          );
         })}
       </div>
     </article>
-  )
+  );
 }
